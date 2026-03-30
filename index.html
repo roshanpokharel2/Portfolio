@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roshan Pokharel — Software QA Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0B1D35;
+      --navy2:   #122540;
+      --gold:    #C8A96E;
+      --gold2:   #E2C99A;
+      --slate:   #6B7F99;
+      --light:   #F4F6F9;
+      --white:   #FFFFFF;
+      --border:  rgba(200,169,110,0.25);
+      --nav-h:   64px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: var(--nav-h);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 5vw;
+      background: rgba(11,29,53,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--gold);
+      letter-spacing: 0.04em; white-space: nowrap;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--light);
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.2s; white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px;
+      background: none; border: none; cursor: pointer; padding: 4px; z-index: 300;
+    }
+    .hamburger span {
+      display: block; width: 100%; height: 2px;
+      background: var(--light); border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s, background 0.2s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--gold); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--gold); }
+
+    /* Mobile Drawer */
+    .mobile-menu {
+      display: none;
+      position: fixed; top: var(--nav-h); left: 0; right: 0;
+      background: rgba(11,29,53,0.98);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      z-index: 199;
+      flex-direction: column;
+      padding: 1.5rem 5vw 2rem;
+      opacity: 0; transform: translateY(-10px);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .mobile-menu.open {
+      display: flex; transform: translateY(0);
+      opacity: 1; pointer-events: all;
+    }
+    .mobile-menu a {
+      display: block; text-decoration: none; color: var(--light);
+      font-size: 1.1rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 1rem 0; border-bottom: 1px solid var(--border);
+      transition: color 0.2s, padding-left 0.2s;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--gold); padding-left: 0.5rem; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: calc(var(--nav-h) + 3rem) 5vw 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(200,169,110,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(18,37,64,0.9) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(200,169,110,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,169,110,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 700px; width: 100%;
+      animation: fadeUp 0.9s ease both;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--border);
+      padding: 0.35rem 0.85rem; border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--gold); flex-shrink: 0;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 5rem);
+      line-height: 1.1; font-weight: 700; margin-bottom: 1.25rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--gold); display: block; }
+    .hero p {
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      line-height: 1.75; color: rgba(244,246,249,0.72);
+      max-width: 520px; margin-bottom: 2.25rem;
+    }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-block; padding: 0.85rem 1.75rem;
+      background: var(--gold); color: var(--navy);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      border: none; border-radius: 2px;
+      text-decoration: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s; white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block; padding: 0.85rem 1.75rem;
+      background: transparent; color: var(--light);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      border: 1px solid var(--border); border-radius: 2px;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s; white-space: nowrap;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--navy2);
+    }
+    .stat {
+      text-align: center; padding: 1.6rem 0.75rem;
+      border-right: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .stat:last-child { border-right: none; }
+    .stat:hover { background: rgba(200,169,110,0.06); }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 700;
+      color: var(--gold); display: block;
+    }
+    .stat-label {
+      font-size: clamp(0.6rem, 1.2vw, 0.75rem); font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--slate); margin-top: 0.25rem;
+    }
+
+    /* SECTIONS */
+    section { padding: clamp(4rem, 8vw, 7rem) 5vw; }
+    .section-header { margin-bottom: 3rem; }
+    .section-tag {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 4vw, 2.75rem);
+      font-weight: 700; line-height: 1.2;
+    }
+    .section-title span { color: var(--gold); }
+    .divider { width: 48px; height: 2px; background: var(--gold); margin-top: 1.25rem; }
+
+    /* ABOUT */
+    #about { background: var(--navy); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 4rem; align-items: start;
+    }
+    .about-card {
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 2rem;
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+    }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--navy2));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem; font-weight: 700;
+      color: var(--navy); margin-bottom: 1.25rem;
+    }
+    .about-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; font-weight: 700; margin-bottom: 0.2rem;
+    }
+    .about-card .role {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.4rem;
+    }
+    .meta-item {
+      display: flex; align-items: center; gap: 0.65rem;
+      font-size: 0.82rem; color: rgba(244,246,249,0.65);
+      margin-bottom: 0.65rem;
+    }
+    .meta-icon { font-size: 0.95rem; flex-shrink: 0; }
+    .about-text p {
+      font-size: clamp(0.875rem, 1.5vw, 1rem);
+      line-height: 1.85; color: rgba(244,246,249,0.72);
+      margin-bottom: 1.4rem;
+    }
+    .about-text p:last-child { margin-bottom: 0; }
+    .highlight-box {
+      border-left: 3px solid var(--gold);
+      padding: 1.1rem 1.4rem;
+      background: rgba(200,169,110,0.05);
+      border-radius: 0 4px 4px 0; margin-top: 1.75rem;
+    }
+    .highlight-box p {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      font-style: italic; color: var(--gold2) !important; margin: 0 !important;
+    }
+
+    /* SKILLS */
+    #skills { background: var(--navy2); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .skill-card {
+      background: var(--navy); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.75rem;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .skill-card::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .skill-card:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 16px 36px rgba(0,0,0,0.3); }
+    .skill-card:hover::after { opacity: 1; }
+    .skill-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+    .skill-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700; margin-bottom: 0.65rem;
+    }
+    .skill-card p {
+      font-size: 0.855rem; line-height: 1.7;
+      color: rgba(244,246,249,0.6); margin-bottom: 1.1rem;
+    }
+    .tool-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tool-tag {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--border);
+      padding: 0.2rem 0.55rem; border-radius: 2px;
+    }
+    .bar-wrap { margin-top: 1.1rem; }
+    .bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.72rem; color: var(--slate); margin-bottom: 0.35rem;
+    }
+    .bar-track { height: 3px; background: rgba(200,169,110,0.12); border-radius: 2px; overflow: hidden; }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      border-radius: 2px; transform-origin: left;
+      animation: fillBar 1.2s ease both;
+    }
+    @keyframes fillBar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    /* CONTACT */
+    #contact { background: var(--navy); }
+    .contact-wrap {
+      display: grid; grid-template-columns: 1fr 1.2fr;
+      gap: 4rem; align-items: start;
+    }
+    .contact-info p {
+      font-size: clamp(0.875rem, 1.5vw, 1rem);
+      line-height: 1.8; color: rgba(244,246,249,0.65); margin-bottom: 2rem;
+    }
+    .contact-links { display: flex; flex-direction: column; gap: 0.85rem; }
+    .contact-link {
+      display: flex; align-items: center; gap: 0.85rem;
+      padding: 0.9rem 1.1rem;
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; text-decoration: none;
+      color: var(--light); font-size: 0.875rem;
+      transition: border-color 0.2s, transform 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .contact-link:hover { border-color: var(--gold); color: var(--gold); transform: translateX(6px); }
+    .contact-link-icon { font-size: 1rem; flex-shrink: 0; }
+    .contact-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+    .form-group label {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate);
+    }
+    .form-group input, .form-group textarea {
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.8rem 0.95rem;
+      color: var(--white); font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s; resize: vertical; width: 100%;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { min-height: 120px; }
+
+    /* FOOTER */
+    footer {
+      text-align: center; padding: 1.75rem 5vw;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem; color: var(--slate); letter-spacing: 0.06em;
+    }
+    footer span { color: var(--gold); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { opacity: 0; transform: translateY(22px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── TABLET (≤860px) ── */
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2) { border-right: none; }
+      .stat:nth-child(3) { border-top: 1px solid var(--border); }
+      .stat:nth-child(4) { border-top: 1px solid var(--border); border-right: none; }
+
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about-card { position: static; }
+
+      .contact-wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+
+    /* ── MOBILE (≤580px) ── */
+    @media (max-width: 580px) {
+      :root { --nav-h: 56px; }
+      .nav-logo { font-size: 1rem; }
+      .hero { padding: calc(var(--nav-h) + 2.5rem) 5vw 3rem; }
+      .hero-tag { font-size: 0.65rem; }
+      .hero-cta { flex-direction: column; }
+      .btn-primary, .btn-outline { text-align: center; width: 100%; }
+      section { padding: 3.5rem 5vw; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .contact-link { font-size: 0.8rem; }
+    }
+
+    /* ── SMALL MOBILE (≤380px) ── */
+    @media (max-width: 380px) {
+      .stats-bar { grid-template-columns: 1fr; }
+      .stat { border-right: none !important; border-top: 1px solid var(--border); }
+      .stat:first-child { border-top: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Roshan Pokharel</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" class="mobile-nav-link">About</a>
+  <a href="#skills" class="mobile-nav-link">Skills</a>
+  <a href="#contact" class="mobile-nav-link">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Software QA Engineer · Quality Assurance</div>
+    <h1>Ensuring Software<em>Excellence.</em></h1>
+    <p>I specialize in building robust quality assurance processes — from meticulous manual testing to sophisticated test automation — ensuring every release is reliable, performant, and defect-free.</p>
+    <div class="hero-cta">
+      <a href="#skills" class="btn-primary">View My Skills</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">2+</span><div class="stat-label">Years Experience</div></div>
+  <div class="stat"><span class="stat-num">7000+</span><div class="stat-label">Bugs Resolved</div></div>
+  <div class="stat"><span class="stat-num">7+</span><div class="stat-label">Projects Delivered</div></div>
+  <div class="stat"><span class="stat-num">98%</span><div class="stat-label">Release Success Rate</div></div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header fade-in">
+    <div class="section-tag">Who I Am</div>
+    <h2 class="section-title">About <span>Me</span></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="about-grid fade-in">
+    <div class="about-card">
+      <div class="avatar">RP</div>
+      <h3>Roshan Pokharel</h3>
+      <div class="role">Software QA Engineer</div>
+      <div class="meta-item"><span class="meta-icon">📍</span>Buddhanagar , Kathmandu</div>
+      <div class="meta-item"><span class="meta-icon">💼</span> Open to Opportunities</div>
+      <div class="meta-item"><span class="meta-icon">🎓</span> B.Sc. Computer Science Information Technology</div>
+      <div class="meta-item"><span class="meta-icon">🌐</span> English · Nepali</div>
+    </div>
+    <div class="about-text">
+      <p>I am a detail-oriented QA Engineer with over 2+ years of experience ensuring software quality across web, mobile, and API-driven applications. My work bridges the gap between development and delivery — catching what others miss and advocating for the end user at every stage of the SDLC.</p>
+      <p>My approach combines disciplined manual testing with modern automation frameworks, giving teams confidence to ship faster without sacrificing reliability. I thrive in Agile environments where quality is a shared responsibility, not an afterthought.</p>
+      <p>Beyond bug hunting, I am passionate about building test strategies from scratch, mentoring team members on quality practices, and fostering a culture where "done" means truly done — tested, documented, and signed off.</p>
+      <div class="highlight-box">
+        <p>"Quality is never an accident; it is always the result of intelligent effort."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header fade-in">
+    <div class="section-tag">What I Do</div>
+    <h2 class="section-title">Core <span>Skills</span></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🔍</div>
+      <h3>Manual Testing</h3>
+      <p>End-to-end functional testing, exploratory testing, regression suites, and UAT coordination to ensure every user flow behaves as expected.</p>
+      <div class="tool-tags">
+        <span class="tool-tag">Test Cases</span><span class="tool-tag">Jira</span>
+        <span class="tool-tag">Documentation</span><span class="tool-tag">Test Plans</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Proficiency</span><span>95%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🔗</div>
+      <h3>API Testing</h3>
+      <p>Comprehensive REST and GraphQL API validation — schema checks, authentication flows, edge cases, and contract testing for reliable integrations.</p>
+      <div class="tool-tags">
+        <span class="tool-tag">Postman</span><span class="tool-tag">Jmeter</span>
+        <span class="tool-tag">Swagger</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Proficiency</span><span>90%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">⚡</div>
+      <h3>Performance Testing</h3>
+      <p>Load, stress, and scalability testing to identify bottlenecks before they reach production, ensuring systems hold up under real-world demand.</p>
+      <div class="tool-tags">
+        <span class="tool-tag">JMeter</span>
+        <!-- <span class="tool-tag">k6</span>
+        <span class="tool-tag">Gatling</span><span class="tool-tag">Grafana</span> -->
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Proficiency</span><span>49%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:49%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🤖</div>
+      <h3>Test Automation</h3>
+      <p>Building maintainable, scalable automation frameworks integrated into CI/CD pipelines — reducing regression cycles from days to minutes.</p>
+      <div class="tool-tags">
+        <!-- <span class="tool-tag">Selenium</span> -->
+        <span class="tool-tag">Cypress</span>
+        <span class="tool-tag">Playwright</span>
+        <!-- <span class="tool-tag">GitHub Actions</span> -->
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Proficiency</span><span>52%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:52%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header fade-in">
+    <div class="section-tag">Let's Connect</div>
+    <h2 class="section-title">Get In <span>Touch</span></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="contact-wrap fade-in">
+    <div class="contact-info">
+      <p>Whether you're looking for a QA Engineer to join your team, need a quality audit on your product, or simply want to discuss best testing practices — My inbox is always open.</p>
+      <div class="contact-links">
+        <a href="mailto:Pokharelroshan72@gmail.com" class="contact-link">
+          <span class="contact-link-icon">✉️</span> Pokharelroshan72@gmail.com
+        </a>
+        <a href="https://www.linkedin.com/in/roshanpokharel2/" class="contact-link" target="_blank" rel="noopener">
+          <span class="contact-link-icon">🔗</span> linkedin.com/in/roshanpokharel2
+        </a>
+        <a href="https://github.com/roshanpokharel2" class="contact-link" target="_blank" rel="noopener">
+          <span class="contact-link-icon">💻</span> github.com/roshanpokharel2
+        </a>
+      </div>
+    </div>
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="Roshan Pokharel" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="roshan@company.com" required />
+      </div>
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="Tell me about the opportunity or project…" required></textarea>
+      </div>
+      <button type="submit" class="btn-primary" style="width:fit-content;align-self:flex-start">Send Message →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 <span>Roshan Pokharel</span> · QA Engineer · Built with care &amp; precision</p>
+</footer>
+
+<script>
+  /* Hamburger Menu */
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    hamburger.setAttribute('aria-expanded', isOpen);
+    if (isOpen) {
+      mobileMenu.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  });
+
+  /* Scroll Animations */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  /* Contact Form */
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = '✓ Message Sent!';
+    btn.style.background = '#2a7a4f';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.textContent = 'Send Message →';
+      btn.style.background = '';
+      btn.style.color = '';
+      e.target.reset();
+    }, 3000);
+  }
+</script>
+</body>
+</html>
