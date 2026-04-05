@@ -583,7 +583,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <p>© 2026 <span>Roshan Pokharel</span> · QA Engineer · Built with care &amp; precision</p>
+  <p>© 2026 <span>Roshan Pokharel</span> · Software QA Engineer </p>
 </footer>
 
 <script>
@@ -631,19 +631,81 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
+  /* EmailJS configuration */
+  const EMAILJS_USER_ID = 'YOUR_EMAILJS_USER_ID';
+  const EMAILJS_SERVICE_ID = 'service_v3ruog4';
+  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+
+  /* EmailJS initialization */
+  (function() {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js';
+    script.onload = () => {
+      if (window.emailjs) {
+        emailjs.init(EMAILJS_USER_ID);
+      }
+    };
+    script.onerror = () => {
+      console.error('Failed to load EmailJS library.');
+    };
+    document.head.appendChild(script);
+  })();
+
   /* Contact Form */
   function handleSubmit(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.textContent = '✓ Message Sent!';
-    btn.style.background = '#2a7a4f';
-    btn.style.color = '#fff';
-    setTimeout(() => {
+    const form = e.target;
+    const btn = form.querySelector('button[type="submit"]');
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!name || !email || !message) {
+      return;
+    }
+
+    if (EMAILJS_USER_ID.includes('YOUR_') || EMAILJS_TEMPLATE_ID.includes('YOUR_')) {
+      console.error('EmailJS is not configured. Set EMAILJS_USER_ID and EMAILJS_TEMPLATE_ID.');
+      alert('Email sending is not configured yet. Please set your EmailJS user ID and template ID in the script.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    if (!window.emailjs) {
+      alert('Email service is not ready yet. Please try again in a few seconds.');
+      btn.disabled = false;
       btn.textContent = 'Send Message →';
-      btn.style.background = '';
-      btn.style.color = '';
-      e.target.reset();
-    }, 3000);
+      return;
+    }
+
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      from_name: name,
+      from_email: email,
+      to_email: 'Pokharelroshan72@gmail.com',
+      reply_to: email,
+      message: message,
+    })
+    .then(() => {
+      btn.textContent = '✓ Message Sent!';
+      btn.style.background = '#2a7a4f';
+      btn.style.color = '#fff';
+      form.reset();
+    })
+    .catch((error) => {
+      console.error('EmailJS error:', error);
+      alert('Sorry, the message could not be sent. Please check the console for details.');
+      btn.textContent = 'Send Message →';
+    })
+    .finally(() => {
+      btn.disabled = false;
+      setTimeout(() => {
+        btn.textContent = 'Send Message →';
+        btn.style.removeProperty('background');
+        btn.style.removeProperty('color');
+      }, 3000);
+    });
   }
 </script>
 </body>
